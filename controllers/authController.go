@@ -2,27 +2,22 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"os"
+	"parking-back/dto"
 	"parking-back/initializers"
+	jwt2 "parking-back/jwt"
 	"parking-back/models"
+	"parking-back/utils"
+	"strconv"
 	"time"
 )
 
 func Signup(c *gin.Context) {
 	// Get the username and password off request body
-	var body struct {
-		Username string
-		Password string
-	}
-
+	var body dto.LoginBody
 	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-
+		utils.ProcessBadResponse(c, "Failed to read body")
 		return
 	}
 
@@ -30,10 +25,7 @@ func Signup(c *gin.Context) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to hash password",
-		})
-
+		utils.ProcessBadResponse(c, "Failed to hash password")
 		return
 	}
 
@@ -42,10 +34,7 @@ func Signup(c *gin.Context) {
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user",
-		})
-
+		utils.ProcessBadResponse(c, "Failed to create user")
 		return
 	}
 
@@ -55,27 +44,19 @@ func Signup(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	// Get the username and password off request body
-	var body struct {
-		Username string
-		Password string
-	}
+	var body dto.LoginBody
 
 	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-
+		utils.ProcessBadResponse(c, "Failed to read body")
 		return
 	}
 
 	// Look up requested user
 	var user models.User
 	initializers.DB.First(&user, "username = ?", body.Username)
-	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid username or password",
-		})
 
+	if user.ID == 0 {
+		utils.ProcessBadResponse(c, "Invalid username or password")
 		return
 	}
 
@@ -83,36 +64,29 @@ func Login(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid username or password",
-		})
-
+		utils.ProcessBadResponse(c, "Invalid username or password")
 		return
 	}
 
 	// Generate a jwt token
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
-
+	jwtToken, err := jwt2.BuildJwt(strconv.Itoa(int(user.ID)))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create token",
-		})
-
+		utils.ProcessBadResponse(c, "Failed to create token")
 		return
 	}
 
 	// Sent it back
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, int(time.Now().Add(time.Hour).Unix()), "", "", false, true)
+	c.SetCookie("Authorization", jwtToken, int(time.Now().Add(time.Hour*24).Unix()), "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{})
+}
+
+func Logout(c *gin.Context) {
+	token, _ := c.Cookie("Authorization")
+	claims, _ := jwt2.ParseJwtClaims(token)
+	initializers.DB.Create(&models.InvalidatedToken{ID: utils.GetUint(claims.ID), Token: token})
+	c.SetCookie("Authorization", "", -1, "", "", false, true)
 }
 
 func Validate(c *gin.Context) {
