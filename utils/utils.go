@@ -19,7 +19,7 @@ func GetUint64(str string) uint64 {
 		fmt.Println("Error parsing uint str:", err)
 		panic(err)
 	}
-	return uint64(id)
+	return id
 }
 
 func GetUint(str string) uint {

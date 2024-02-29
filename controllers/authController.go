@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"parking-back/dto"
+	"parking-back/dtos"
 	"parking-back/initializers"
 	jwt2 "parking-back/jwt"
 	"parking-back/models"
@@ -15,7 +15,7 @@ import (
 
 func Signup(c *gin.Context) {
 	// Get the username and password off request body
-	var body dto.LoginBody
+	var body dtos.SignupDto
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read body")
 		return
@@ -30,7 +30,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// Create the user
-	user := models.User{Username: body.Username, Password: string(hash)}
+	user := models.User{FullName: body.FullName, Username: body.Username, Password: string(hash)}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
@@ -44,7 +44,7 @@ func Signup(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	// Get the username and password off request body
-	var body dto.LoginBody
+	var body dtos.LoginDto
 
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read body")
