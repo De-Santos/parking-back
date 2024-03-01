@@ -3,22 +3,21 @@ package dtos
 import "parking-back/models"
 
 type LoginDto struct {
-	Username string
-	Password string
+	Username string `validate:"required"`
+	Password string `validate:"required"`
 }
 
 type SignupDto struct {
-	FullName string
-	Username string
-	Password string
+	FullName string `validate:"required"`
+	Username string `validate:"required"`
+	Password string `validate:"required"`
 }
 
 type ParkingDto struct {
 	ID          uint
-	Owner       string
-	Address     string
-	Capacity    int
-	Password    string
+	Owner       string `validate:"required"`
+	Address     string `validate:"required"`
+	Capacity    int    `validate:"required,gt=0"`
 	Coordinates models.Coordinates
 	CreatedBy   string
 }

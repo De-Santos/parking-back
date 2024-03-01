@@ -10,7 +10,6 @@ type Parking struct {
 	Owner       string
 	Address     string
 	Capacity    int
-	Password    string
 	Coordinates Coordinates `gorm:"embedded"`
 	CreatedByID uint
 	CreatedBy   User `gorm:"foreignKey:CreatedByID"`

@@ -11,6 +11,7 @@ func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDb()
 	initializers.SyncDatabase()
+	initializers.InitializeVariables()
 }
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 	r.POST("/logout", middleware.RequireAuth, controllers.Logout)
 
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	r.POST("/parking", middleware.RequireAuth, controllers.AddParking)
 
 	_ = r.Run()
 }

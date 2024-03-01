@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -18,6 +19,12 @@ func Signup(c *gin.Context) {
 	var body dtos.SignupDto
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read body")
+		return
+	}
+
+	err := initializers.V.Struct(body)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
 		return
 	}
 
@@ -51,6 +58,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	err := initializers.V.Struct(body)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
+		return
+	}
+
 	// Look up requested user
 	var user models.User
 	initializers.DB.First(&user, "username = ?", body.Username)
@@ -61,7 +74,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Compare sent in password with saved user password hash
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if err != nil {
 		utils.ProcessBadResponse(c, "Invalid username or password")
