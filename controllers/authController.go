@@ -5,10 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	"parking-back/dtos"
 	"parking-back/initializers"
 	jwt2 "parking-back/jwt"
 	"parking-back/models"
+	"parking-back/obj"
 	"parking-back/utils"
 	"strconv"
 	"time"
@@ -16,7 +16,7 @@ import (
 
 func Signup(c *gin.Context) {
 	// Get the username and password off request body
-	var body dtos.SignupDto
+	var body obj.SignupDto
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read body")
 		return
@@ -51,7 +51,7 @@ func Signup(c *gin.Context) {
 
 func Login(c *gin.Context) {
 	// Get the username and password off request body
-	var body dtos.LoginDto
+	var body obj.LoginDto
 
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read body")

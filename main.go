@@ -24,6 +24,7 @@ func main() {
 
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	r.POST("/parking", middleware.RequireAuth, controllers.AddParking)
+	r.GET("/parking", middleware.RequireAuth, controllers.GetParkingList)
 
 	_ = r.Run()
 }

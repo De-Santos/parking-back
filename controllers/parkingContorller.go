@@ -3,34 +3,54 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"parking-back/dtos"
+	"net/http"
 	"parking-back/initializers"
 	"parking-back/mapper"
 	"parking-back/models"
+	"parking-back/obj"
+	"parking-back/repository"
 	"parking-back/utils"
 )
 
 func AddParking(c *gin.Context) {
-	// Get data from request
-	var body dtos.ParkingDto
+	var body obj.ParkingDto
 	if c.Bind(&body) != nil {
 		utils.ProcessBadResponse(c, "Failed to read dto")
 		return
 	}
 
-	// Validate data
 	err := initializers.V.Struct(body)
 	if err != nil {
 		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
 		return
 	}
 
-	// Map to model
 	user, _ := c.Get("user")
 	entity := mapper.MapToParkingModel(body, user.(models.User).ID)
 
-	fmt.Println(user)
-
-	// Save into database
 	initializers.DB.Create(&entity)
+}
+
+func GetParkingList(c *gin.Context) {
+	var query obj.ParkingSearchQuery
+	if c.BindQuery(&query) != nil {
+		utils.ProcessBadResponse(c, "Invalid query params")
+		return
+	}
+
+	err := initializers.V.Struct(query)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Invalid request query: "+fmt.Sprint(err))
+		return
+	}
+
+	parkingPage := repository.GetParkingPage(&query)
+	parkingDtoPage := mapper.MapToParkingDtoList(parkingPage)
+
+	var interfaceSlice []interface{}
+	for _, parkingDto := range parkingDtoPage {
+		interfaceSlice = append(interfaceSlice, parkingDto)
+	}
+
+	c.JSON(http.StatusOK, obj.PageableDtoWrapper{}.New(&query, interfaceSlice))
 }
