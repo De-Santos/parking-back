@@ -28,5 +28,10 @@ func main() {
 	r.PUT("/parking", middleware.RequireAuth, controllers.UpdateParking)
 	r.DELETE("/parking", middleware.RequireAuth, controllers.DeleteParking)
 
+	// Car
+	r.POST("/car", middleware.RequireAuth, controllers.AddCar)
+	r.GET("/car", middleware.RequireAuth, controllers.GetCarList)
+	r.PUT("/car", middleware.RequireAuth, controllers.UpdateCar)
+	r.DELETE("/car", middleware.RequireAuth, controllers.DeleteCar)
 	_ = r.Run()
 }

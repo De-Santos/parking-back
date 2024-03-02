@@ -26,15 +26,10 @@ type ParkingDto struct {
 	CreatedAt   time.Time          `json:"created_at"`
 }
 
-type PageableDtoWrapper struct {
-	Limit int           `json:"limit"`
-	Page  int           `json:"page"`
-	Body  []interface{} `json:"body"`
-}
-
-func (pdw PageableDtoWrapper) New(pageable Pageable, body []interface{}) PageableDtoWrapper {
-	if body == nil {
-		body = []interface{}{}
-	}
-	return PageableDtoWrapper{Limit: pageable.GetLimit(), Page: pageable.GetPage(), Body: body}
+type CarDto struct {
+	ID         uint      `json:"id"`
+	Vpr        string    `json:"vpr" validate:"required"`
+	Arrived    time.Time `json:"arrived" validate:"required"`
+	Expiration time.Time `json:"expiration" validate:"required"`
+	ParkingId  uint      `json:"parking_id" validate:"gte=0"`
 }

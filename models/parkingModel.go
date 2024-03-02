@@ -38,3 +38,11 @@ type Car struct {
 	ParkingId  uint
 	Parking    Parking `gorm:"foreignKey:ParkingId"`
 }
+
+func (c *Car) GetUpdatedColumns() map[string]interface{} {
+	return map[string]interface{}{
+		"vpr":        c.Vpr,
+		"arrived":    c.Arrived,
+		"expiration": c.Expiration,
+	}
+}

@@ -1,19 +1,20 @@
 package obj
 
-type ParkingSearchQuery struct {
+type SearchQuery struct {
 	Limit      int    `form:"limit" validate:"required,gt=0"`
 	Page       int    `form:"page" validate:"gte=0"`
 	SearchText string `form:"search_text"`
+	Context    int    `form:"c"`
 }
 
-func (psq *ParkingSearchQuery) GetLimit() int {
+func (psq *SearchQuery) GetLimit() int {
 	return psq.Limit
 }
 
-func (psq *ParkingSearchQuery) GetPage() int {
+func (psq *SearchQuery) GetPage() int {
 	return psq.Page
 }
 
-type ParkingDeleteQuery struct {
+type IdQuery struct {
 	ID int `form:"id" validate:"required,gt=0"`
 }

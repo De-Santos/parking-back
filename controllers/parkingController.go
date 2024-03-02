@@ -10,18 +10,13 @@ import (
 	"parking-back/obj"
 	"parking-back/repository"
 	"parking-back/utils"
+	"parking-back/utils/request"
 )
 
 func AddParking(c *gin.Context) {
 	var body obj.ParkingDto
-	if c.Bind(&body) != nil {
-		utils.ProcessBadResponse(c, "Failed to read dto")
-		return
-	}
-
-	err := initializers.V.Struct(body)
-	if err != nil {
-		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
+	if e := request.BindValidBody(c, &body); e != nil {
+		utils.ProcessBadResponse(c, e.Message)
 		return
 	}
 
@@ -34,15 +29,9 @@ func AddParking(c *gin.Context) {
 }
 
 func GetParkingList(c *gin.Context) {
-	var query obj.ParkingSearchQuery
-	if c.BindQuery(&query) != nil {
-		utils.ProcessBadResponse(c, "Invalid query params")
-		return
-	}
-
-	err := initializers.V.Struct(query)
-	if err != nil {
-		utils.ProcessBadResponse(c, "Invalid request query: "+fmt.Sprint(err))
+	var query obj.SearchQuery
+	if e := request.BindValidQuery(c, &query); e != nil {
+		utils.ProcessBadResponse(c, e.Message)
 		return
 	}
 
@@ -59,14 +48,8 @@ func GetParkingList(c *gin.Context) {
 
 func UpdateParking(c *gin.Context) {
 	var body obj.ParkingDto
-	if c.Bind(&body) != nil {
-		utils.ProcessBadResponse(c, "Failed to read dto")
-		return
-	}
-
-	err := initializers.V.Struct(body)
-	if err != nil {
-		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
+	if e := request.BindValidBody(c, &body); e != nil {
+		utils.ProcessBadResponse(c, e.Message)
 		return
 	}
 
@@ -82,22 +65,15 @@ func UpdateParking(c *gin.Context) {
 }
 
 func DeleteParking(c *gin.Context) {
-	var query obj.ParkingDeleteQuery
-	if c.BindQuery(&query) != nil {
-		utils.ProcessBadResponse(c, "Invalid query params")
-		return
-	}
-
-	err := initializers.V.Struct(query)
-	if err != nil {
-		utils.ProcessBadResponse(c, "Invalid request query: "+fmt.Sprint(err))
+	var query obj.IdQuery
+	if e := request.BindValidQuery(c, &query); e != nil {
+		utils.ProcessBadResponse(c, e.Message)
 		return
 	}
 
 	result := repository.DeleteParkingById(query.ID)
-
 	if result == false {
-		utils.ProcessBadResponse(c, "Delete parking failed")
+		utils.ProcessBadResponse(c, "Delete failed")
 		return
 	}
 
