@@ -18,6 +18,27 @@ func GetParkingPage(pageable obj.Pageable) []models.Parking {
 	return parkingList
 }
 
+func UpdateParking(parking models.Parking) (models.Parking, error) {
+	tx := initializers.DB.Begin()
+
+	if err := tx.Model(&parking).Updates(parking.GetUpdatedColumns()).Error; err != nil {
+		tx.Rollback()
+		return models.Parking{}, err
+	}
+
+	var updatedParking models.Parking
+	if err := tx.Preload("CreatedBy").First(&updatedParking, parking.ID).Error; err != nil {
+		tx.Rollback()
+		return models.Parking{}, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return models.Parking{}, err
+	}
+
+	return updatedParking, nil
+}
+
 func DeleteParkingById(id int) bool {
 	result := initializers.DB.Delete(&models.Parking{}, id)
 	if result.Error != nil {

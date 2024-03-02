@@ -26,7 +26,7 @@ func AddParking(c *gin.Context) {
 	}
 
 	user, _ := c.Get("user")
-	entity := mapper.MapToParkingModel(body, user.(models.User).ID)
+	entity := mapper.MapToParkingModelWithUser(body, user.(models.User).ID)
 
 	initializers.DB.Create(&entity)
 
@@ -55,6 +55,30 @@ func GetParkingList(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, obj.PageableDtoWrapper{}.New(&query, interfaceSlice))
+}
+
+func UpdateParking(c *gin.Context) {
+	var body obj.ParkingDto
+	if c.Bind(&body) != nil {
+		utils.ProcessBadResponse(c, "Failed to read dto")
+		return
+	}
+
+	err := initializers.V.Struct(body)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Invalid request body: "+fmt.Sprint(err))
+		return
+	}
+
+	parking := mapper.MapToParkingModel(body)
+	updatedParking, err := repository.UpdateParking(parking)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Update failed: "+fmt.Sprint(err))
+		return
+	}
+
+	response := mapper.MapToParkingDto(updatedParking)
+	c.JSON(http.StatusOK, response)
 }
 
 func DeleteParking(c *gin.Context) {

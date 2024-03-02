@@ -15,6 +15,16 @@ type Parking struct {
 	CreatedBy   User `gorm:"foreignKey:CreatedByID"`
 }
 
+func (p *Parking) GetUpdatedColumns() map[string]interface{} {
+	return map[string]interface{}{
+		"owner":    p.Owner,
+		"address":  p.Address,
+		"capacity": p.Capacity,
+		"lat":      p.Coordinates.Lat,
+		"lng":      p.Coordinates.Lng,
+	}
+}
+
 type Coordinates struct {
 	Lat float32 `json:"lat"`
 	Lng float32 `json:"lng"`

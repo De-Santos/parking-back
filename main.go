@@ -25,6 +25,7 @@ func main() {
 	// Parking
 	r.POST("/parking", middleware.RequireAuth, controllers.AddParking)
 	r.GET("/parking", middleware.RequireAuth, controllers.GetParkingList)
+	r.PUT("/parking", middleware.RequireAuth, controllers.UpdateParking)
 	r.DELETE("/parking", middleware.RequireAuth, controllers.DeleteParking)
 
 	_ = r.Run()

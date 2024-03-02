@@ -1,17 +1,28 @@
 package mapper
 
 import (
+	"gorm.io/gorm"
 	"parking-back/models"
 	"parking-back/obj"
 )
 
-func MapToParkingModel(dto obj.ParkingDto, userId uint) models.Parking {
+func MapToParkingModelWithUser(dto obj.ParkingDto, userId uint) models.Parking {
 	return models.Parking{
 		Owner:       dto.Owner,
 		Address:     dto.Address,
 		Capacity:    dto.Capacity,
 		Coordinates: dto.Coordinates,
 		CreatedByID: userId,
+	}
+}
+
+func MapToParkingModel(dto obj.ParkingDto) models.Parking {
+	return models.Parking{
+		Model:       gorm.Model{ID: dto.ID},
+		Owner:       dto.Owner,
+		Address:     dto.Address,
+		Capacity:    dto.Capacity,
+		Coordinates: dto.Coordinates,
 	}
 }
 
