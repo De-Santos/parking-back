@@ -10,12 +10,22 @@ import (
 
 func GetParkingPage(pageable obj.Pageable) []models.Parking {
 	var parkingList []models.Parking
-	offset := utils.GetOffset(pageable.GetPage(), pageable.GetLimit())
-	fmt.Println(offset)
 	initializers.DB.
 		Preload("CreatedBy").
 		Limit(pageable.GetLimit()).
-		Offset(offset).
+		Offset(utils.GetOffset(pageable.GetPage(), pageable.GetLimit())).
 		Find(&parkingList)
 	return parkingList
+}
+
+func DeleteParkingById(id int) bool {
+	result := initializers.DB.Delete(&models.Parking{}, id)
+	if result.Error != nil {
+		fmt.Println("Error:", result.Error)
+		return false
+	}
+	if result.RowsAffected == 0 {
+		return false
+	}
+	return true
 }

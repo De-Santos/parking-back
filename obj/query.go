@@ -13,3 +13,7 @@ func (psq *ParkingSearchQuery) GetLimit() int {
 func (psq *ParkingSearchQuery) GetPage() int {
 	return psq.Page
 }
+
+type ParkingDeleteQuery struct {
+	ID int `form:"id" validate:"required,gt=0"`
+}

@@ -28,7 +28,7 @@ type ParkingDto struct {
 
 type PageableDtoWrapper struct {
 	Limit int           `json:"limit"`
-	Page  int           `json:"offset"`
+	Page  int           `json:"page"`
 	Body  []interface{} `json:"body"`
 }
 

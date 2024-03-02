@@ -101,9 +101,3 @@ func Logout(c *gin.Context) {
 	initializers.DB.Create(&models.InvalidatedToken{ID: utils.GetUint(claims.ID), Token: token})
 	c.SetCookie("Authorization", "", -1, "", "", false, true)
 }
-
-func Validate(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "I'm logged in",
-	})
-}

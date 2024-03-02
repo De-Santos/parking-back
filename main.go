@@ -22,9 +22,10 @@ func main() {
 	r.POST("/login", controllers.Login)
 	r.POST("/logout", middleware.RequireAuth, controllers.Logout)
 
-	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
+	// Parking
 	r.POST("/parking", middleware.RequireAuth, controllers.AddParking)
 	r.GET("/parking", middleware.RequireAuth, controllers.GetParkingList)
+	r.DELETE("/parking", middleware.RequireAuth, controllers.DeleteParking)
 
 	_ = r.Run()
 }

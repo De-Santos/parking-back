@@ -29,6 +29,8 @@ func AddParking(c *gin.Context) {
 	entity := mapper.MapToParkingModel(body, user.(models.User).ID)
 
 	initializers.DB.Create(&entity)
+
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func GetParkingList(c *gin.Context) {
@@ -53,4 +55,27 @@ func GetParkingList(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, obj.PageableDtoWrapper{}.New(&query, interfaceSlice))
+}
+
+func DeleteParking(c *gin.Context) {
+	var query obj.ParkingDeleteQuery
+	if c.BindQuery(&query) != nil {
+		utils.ProcessBadResponse(c, "Invalid query params")
+		return
+	}
+
+	err := initializers.V.Struct(query)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Invalid request query: "+fmt.Sprint(err))
+		return
+	}
+
+	result := repository.DeleteParkingById(query.ID)
+
+	if result == false {
+		utils.ProcessBadResponse(c, "Delete parking failed")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }
