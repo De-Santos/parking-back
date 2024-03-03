@@ -18,3 +18,7 @@ func (psq *SearchQuery) GetPage() int {
 type IdQuery struct {
 	ID int `form:"id" validate:"required,gt=0"`
 }
+
+type StringQuery struct {
+	String string `form:"s" validate:"required"`
+}
