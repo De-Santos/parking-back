@@ -13,15 +13,26 @@ import (
 
 func RequireAuth(c *gin.Context) {
 	// Get the cookie off request
-	tokenString, err := c.Cookie("Authorization")
+	cookieToken, err := c.Cookie("Authorization")
+	var headerToken jwt2.HeaderToken
+	err2 := c.BindHeader(&headerToken)
+	var token string
 
-	if err != nil {
+	if err == nil {
+		token = cookieToken
+	} else if err2 == nil {
+		token, err = headerToken.GetToken()
+		if err != nil {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
 	// Decode and validate jwt
-	claims, err := jwt2.ParseJwtClaims(tokenString)
+	claims, err := jwt2.ParseJwtClaims(token)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
@@ -50,6 +61,7 @@ func RequireAuth(c *gin.Context) {
 
 	// Attach to request
 	c.Set("user", user)
+	c.Set("token", token)
 
 	// Continue
 	c.Next()

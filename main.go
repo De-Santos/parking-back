@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"parking-back/controllers"
 	"parking-back/initializers"
@@ -18,7 +17,7 @@ func init() {
 func main() {
 	r := gin.Default()
 
-	r.Use(cors.Default())
+	r.Use(initializers.GetCors())
 
 	// Auth
 	r.POST("/signup", controllers.Signup)

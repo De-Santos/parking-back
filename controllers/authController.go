@@ -9,9 +9,7 @@ import (
 	jwt2 "parking-back/jwt"
 	"parking-back/models"
 	"parking-back/obj"
-	"parking-back/repository"
 	"parking-back/utils"
-	"parking-back/utils/request"
 	"strconv"
 	"time"
 )
@@ -93,24 +91,13 @@ func Login(c *gin.Context) {
 	// Sent it back
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", jwtToken, int(time.Now().Add(time.Hour*24).Unix()), "", "", false, true)
-
-	c.JSON(http.StatusOK, gin.H{})
+	c.Header("Authorization", jwtToken)
+	c.JSON(http.StatusOK, gin.H{"token": jwtToken})
 }
 
 func Logout(c *gin.Context) {
-	token, _ := c.Cookie("Authorization")
-	claims, _ := jwt2.ParseJwtClaims(token)
-	initializers.DB.Create(&models.InvalidatedToken{ID: utils.GetUint(claims.ID), Token: token})
+	token, _ := c.Get("token")
+	claims, _ := jwt2.ParseJwtClaims(token.(string))
+	initializers.DB.Create(&models.InvalidatedToken{ID: utils.GetUint(claims.ID), Token: token.(string)})
 	c.SetCookie("Authorization", "", -1, "", "", false, true)
-}
-
-func CheckUsernameExistence(c *gin.Context) {
-	var query obj.StringQuery
-	if e := request.BindValidQuery(c, &query); e != nil {
-		utils.ProcessBadResponse(c, e.Message)
-		return
-	}
-
-	result := repository.CheckUsernameExistence(query.String)
-	c.JSON(http.StatusOK, result)
 }
