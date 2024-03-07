@@ -7,6 +7,7 @@ import (
 
 type Parking struct {
 	gorm.Model
+	ParkingName string
 	Owner       string
 	Address     string
 	Capacity    int
@@ -17,11 +18,12 @@ type Parking struct {
 
 func (p *Parking) GetUpdatedColumns() map[string]interface{} {
 	return map[string]interface{}{
-		"owner":    p.Owner,
-		"address":  p.Address,
-		"capacity": p.Capacity,
-		"lat":      p.Coordinates.Lat,
-		"lng":      p.Coordinates.Lng,
+		"parking_name": p.ParkingName,
+		"owner":        p.Owner,
+		"address":      p.Address,
+		"capacity":     p.Capacity,
+		"lat":          p.Coordinates.Lat,
+		"lng":          p.Coordinates.Lng,
 	}
 }
 

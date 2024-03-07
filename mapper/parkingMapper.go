@@ -8,6 +8,7 @@ import (
 
 func MapToParkingModelWithUser(dto obj.ParkingDto, userId uint) models.Parking {
 	return models.Parking{
+		ParkingName: dto.ParkingName,
 		Owner:       dto.Owner,
 		Address:     dto.Address,
 		Capacity:    dto.Capacity,
@@ -19,6 +20,7 @@ func MapToParkingModelWithUser(dto obj.ParkingDto, userId uint) models.Parking {
 func MapToParkingModel(dto obj.ParkingDto) models.Parking {
 	return models.Parking{
 		Model:       gorm.Model{ID: dto.ID},
+		ParkingName: dto.ParkingName,
 		Owner:       dto.Owner,
 		Address:     dto.Address,
 		Capacity:    dto.Capacity,
@@ -37,6 +39,7 @@ func MapToParkingDtoList(parkingList []models.Parking) []obj.ParkingDto {
 func MapToParkingDto(parking models.Parking) obj.ParkingDto {
 	return obj.ParkingDto{
 		ID:          parking.ID,
+		ParkingName: parking.ParkingName,
 		Owner:       parking.Owner,
 		Address:     parking.Address,
 		Capacity:    parking.Capacity,

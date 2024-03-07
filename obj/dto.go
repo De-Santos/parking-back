@@ -18,6 +18,7 @@ type SignupDto struct {
 
 type ParkingDto struct {
 	ID          uint               `json:"id"`
+	ParkingName string             `json:"parking_name" validate:"required"`
 	Owner       string             `json:"owner" validate:"required"`
 	Address     string             `json:"address" validate:"required"`
 	Capacity    int                `json:"capacity" validate:"required,gt=0"`
