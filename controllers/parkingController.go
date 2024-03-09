@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"parking-back/initializers"
 	"parking-back/mapper"
 	"parking-back/models"
 	"parking-back/obj"
@@ -22,10 +21,15 @@ func AddParking(c *gin.Context) {
 
 	user, _ := c.Get("user")
 	entity := mapper.MapToParkingModelWithUser(body, user.(models.User).ID)
+	createdParking, err := repository.CreateParking(entity)
+	if err != nil {
+		utils.ProcessBadResponse(c, "Create parking failed: "+fmt.Sprint(err))
+		return
+	}
 
-	initializers.DB.Create(&entity)
+	dto := mapper.MapToParkingDto(createdParking)
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, dto)
 }
 
 func GetParkingList(c *gin.Context) {

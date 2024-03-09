@@ -50,3 +50,20 @@ func DeleteParkingById(id int) bool {
 	}
 	return true
 }
+
+func CreateParking(parking models.Parking) (models.Parking, error) {
+	tx := initializers.DB.Begin()
+
+	tx.Create(&parking)
+
+	if err := tx.Preload("CreatedBy").First(&parking, parking.ID).Error; err != nil {
+		tx.Rollback()
+		return models.Parking{}, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return models.Parking{}, err
+	}
+
+	return parking, nil
+}
