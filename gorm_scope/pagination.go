@@ -1,6 +1,7 @@
 package gorm_scope
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"math"
@@ -19,5 +20,18 @@ func Paginate(value interface{}, pagination obj.Pagination, db *gorm.DB) func(db
 			Offset(utils.GetOffset(pagination.GetPage(), pagination.GetLimit())).
 			Limit(pagination.GetLimit()).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: "id"}, Desc: true})
+	}
+}
+
+func FlexWhere(value interface{}, search obj.Search) func(db *gorm.DB) *gorm.DB {
+	if search.GetSearchBy() == "" || search.GetSearchText() == "" {
+		return func(db *gorm.DB) *gorm.DB { return db }
+	}
+	sql := fmt.Sprintf("%s ILIKE TRIM(?)", search.GetSearchBy())
+	st := "%" + search.GetSearchText() + "%"
+	return func(db *gorm.DB) *gorm.DB {
+		return db.
+			Model(value).
+			Where(sql, st)
 	}
 }

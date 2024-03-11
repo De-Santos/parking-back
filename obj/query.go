@@ -5,6 +5,15 @@ type SearchQuery struct {
 	Page       int    `form:"page" validate:"gte=0"`
 	SearchText string `form:"search_text"`
 	Context    int    `form:"c"`
+	SearchBy   string `form:"sb"`
+}
+
+func (psq *SearchQuery) GetSearchBy() string {
+	return psq.SearchBy
+}
+
+func (psq *SearchQuery) GetSearchText() string {
+	return psq.SearchText
 }
 
 func (psq *SearchQuery) GetLimit() int {

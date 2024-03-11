@@ -8,12 +8,22 @@ import (
 	"parking-back/obj"
 )
 
-func GetParkingPage(pagination obj.Pagination) []models.Parking {
+func GetParkingPage(pagination obj.Pagination, search obj.Search) []models.Parking {
 	var parkingList []models.Parking
-	initializers.DB.
+
+	// Build the query without executing it yet
+	query := initializers.DB.
 		Preload("CreatedBy").
 		Scopes(gorm_scope.Paginate(parkingList, pagination, initializers.DB)).
+		Scopes(gorm_scope.FlexWhere(parkingList, search)).
 		Find(&parkingList)
+
+	// Print the generated SQL statement
+	fmt.Println("Generated SQL:", query.Statement.SQL.String())
+
+	// Execute the query and retrieve results
+	query.Find(&parkingList)
+
 	return parkingList
 }
 

@@ -42,7 +42,7 @@ func GetParkingList(c *gin.Context) {
 	wrapper := obj.PageableWrapper{}
 	wrapper.OffMigrate(&query)
 
-	parkingPage := repository.GetParkingPage(&wrapper)
+	parkingPage := repository.GetParkingPage(&wrapper, &query)
 	parkingDtoPage := mapper.MapToParkingDtoList(parkingPage)
 
 	var interfaceSlice []interface{}

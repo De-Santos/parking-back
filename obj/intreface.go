@@ -16,3 +16,8 @@ type Pagination interface {
 	SetTotalRows(rows int64)
 	SetTotalPage(pages int)
 }
+
+type Search interface {
+	GetSearchBy() string
+	GetSearchText() string
+}
