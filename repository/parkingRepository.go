@@ -2,18 +2,17 @@ package repository
 
 import (
 	"fmt"
+	"parking-back/gorm_scope"
 	"parking-back/initializers"
 	"parking-back/models"
 	"parking-back/obj"
-	"parking-back/utils"
 )
 
-func GetParkingPage(pageable obj.Pageable) []models.Parking {
+func GetParkingPage(pagination obj.Pagination) []models.Parking {
 	var parkingList []models.Parking
 	initializers.DB.
 		Preload("CreatedBy").
-		Limit(pageable.GetLimit()).
-		Offset(utils.GetOffset(pageable.GetPage(), pageable.GetLimit())).
+		Scopes(gorm_scope.Paginate(parkingList, pagination, initializers.DB)).
 		Find(&parkingList)
 	return parkingList
 }

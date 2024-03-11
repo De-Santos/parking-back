@@ -32,6 +32,9 @@ func GetCarList(c *gin.Context) {
 		return
 	}
 
+	wrapper := obj.PageableWrapper{}
+	wrapper.OffMigrate(&query)
+
 	carPage := repository.GetCarPage(&query, uint(query.Context))
 	parkingDtoPage := mapper.MapToCarDtoList(carPage)
 
@@ -40,7 +43,9 @@ func GetCarList(c *gin.Context) {
 		interfaceSlice = append(interfaceSlice, carDto)
 	}
 
-	c.JSON(http.StatusOK, obj.PageableDtoWrapper{}.New(&query, interfaceSlice))
+	wrapper.SetBody(interfaceSlice)
+
+	c.JSON(http.StatusOK, wrapper)
 }
 
 func UpdateCar(c *gin.Context) {

@@ -39,15 +39,19 @@ func GetParkingList(c *gin.Context) {
 		return
 	}
 
-	parkingPage := repository.GetParkingPage(&query)
+	wrapper := obj.PageableWrapper{}
+	wrapper.OffMigrate(&query)
+
+	parkingPage := repository.GetParkingPage(&wrapper)
 	parkingDtoPage := mapper.MapToParkingDtoList(parkingPage)
 
 	var interfaceSlice []interface{}
 	for _, parkingDto := range parkingDtoPage {
 		interfaceSlice = append(interfaceSlice, parkingDto)
 	}
+	wrapper.SetBody(interfaceSlice)
 
-	c.JSON(http.StatusOK, obj.PageableDtoWrapper{}.New(&query, interfaceSlice))
+	c.JSON(http.StatusOK, wrapper)
 }
 
 func UpdateParking(c *gin.Context) {
