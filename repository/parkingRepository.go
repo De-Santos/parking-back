@@ -10,21 +10,18 @@ import (
 
 func GetParkingPage(pagination obj.Pagination, search obj.Search) []models.Parking {
 	var parkingList []models.Parking
-
-	// Build the query without executing it yet
-	query := initializers.DB.
+	initializers.DB.
 		Preload("CreatedBy").
 		Scopes(gorm_scope.Paginate(parkingList, pagination, initializers.DB)).
 		Scopes(gorm_scope.FlexWhere(parkingList, search)).
 		Find(&parkingList)
-
-	// Print the generated SQL statement
-	fmt.Println("Generated SQL:", query.Statement.SQL.String())
-
-	// Execute the query and retrieve results
-	query.Find(&parkingList)
-
 	return parkingList
+}
+
+func GetParking(id int) models.Parking {
+	var parking models.Parking
+	initializers.DB.Preload("CreatedBy").First(&parking, id)
+	return parking
 }
 
 func UpdateParking(parking models.Parking) (models.Parking, error) {

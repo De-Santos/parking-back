@@ -54,6 +54,19 @@ func GetParkingList(c *gin.Context) {
 	c.JSON(http.StatusOK, wrapper)
 }
 
+func GetParking(c *gin.Context) {
+	var query obj.IdQuery
+	if e := request.BindValidQuery(c, &query); e != nil {
+		utils.ProcessBadResponse(c, e.Message)
+		return
+	}
+
+	entity := repository.GetParking(query.ID)
+	dto := mapper.MapToParkingDto(entity)
+
+	c.JSON(http.StatusOK, dto)
+}
+
 func UpdateParking(c *gin.Context) {
 	var body obj.ParkingDto
 	if e := request.BindValidBody(c, &body); e != nil {
