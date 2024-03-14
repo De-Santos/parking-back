@@ -2,23 +2,24 @@ package repository
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"parking-back/gorm_scope"
 	"parking-back/initializers"
 	"parking-back/models"
 	"parking-back/obj"
-	"parking-back/utils"
 )
 
 func SaveCar(car models.Car) {
 	initializers.DB.Create(&car)
 }
 
-func GetCarPage(pageable obj.Pageable, parkingId uint) []models.Car {
+func GetCarPage(pagination obj.Pagination, query obj.Search, parkingId uint) []models.Car {
 	var carList []models.Car
 	initializers.DB.
+		Scopes(gorm_scope.Paginate(countFunction(parkingId), pagination, initializers.DB)).
+		Scopes(gorm_scope.FlexWhere(carList, query)).
 		Where(&models.Car{ParkingId: parkingId}).
-		Limit(pageable.GetLimit()).
-		Offset(utils.GetOffset(pageable.GetPage(), pageable.GetLimit())).
 		Find(&carList)
 	return carList
 }
@@ -48,4 +49,10 @@ func DeleteCarById(id int) bool {
 		return false
 	}
 	return true
+}
+
+func countFunction(parkingId uint) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Model(models.Car{}).Where(&models.Car{ParkingId: parkingId})
+	}
 }

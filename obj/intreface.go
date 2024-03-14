@@ -20,4 +20,5 @@ type Pagination interface {
 type Search interface {
 	GetSearchBy() string
 	GetSearchText() string
+	GetType() string
 }

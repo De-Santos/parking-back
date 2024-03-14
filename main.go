@@ -36,7 +36,7 @@ func main() {
 
 	// Car
 	r.POST("/car", middleware.RequireAuth, controllers.AddCar)
-	r.GET("/car", middleware.RequireAuth, controllers.GetCarList)
+	r.GET("/cars", middleware.RequireAuth, controllers.GetCarList)
 	r.PUT("/car", middleware.RequireAuth, controllers.UpdateCar)
 	r.DELETE("/car", middleware.RequireAuth, controllers.DeleteCar)
 

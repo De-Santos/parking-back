@@ -29,7 +29,7 @@ type ParkingDto struct {
 
 type CarDto struct {
 	ID         uint      `json:"id"`
-	Vpr        string    `json:"vpr" validate:"required"`
+	Vrp        string    `json:"vrp" validate:"required"`
 	Arrived    time.Time `json:"arrived" validate:"required"`
 	Expiration time.Time `json:"expiration" validate:"required"`
 	ParkingId  uint      `json:"parking_id" validate:"gte=0"`

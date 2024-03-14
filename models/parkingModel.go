@@ -34,7 +34,7 @@ type Coordinates struct {
 
 type Car struct {
 	gorm.Model
-	Vpr        string
+	Vrp        string
 	Arrived    time.Time
 	Expiration time.Time
 	ParkingId  uint
@@ -43,7 +43,7 @@ type Car struct {
 
 func (c *Car) GetUpdatedColumns() map[string]interface{} {
 	return map[string]interface{}{
-		"vpr":        c.Vpr,
+		"vrp":        c.Vrp,
 		"arrived":    c.Arrived,
 		"expiration": c.Expiration,
 	}

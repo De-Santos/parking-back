@@ -6,6 +6,11 @@ type SearchQuery struct {
 	SearchText string `form:"search_text"`
 	Context    int    `form:"c"`
 	SearchBy   string `form:"sb"`
+	Type       string `form:"t"`
+}
+
+func (psq *SearchQuery) GetType() string {
+	return psq.Type
 }
 
 func (psq *SearchQuery) GetSearchBy() string {

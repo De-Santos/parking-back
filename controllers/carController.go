@@ -31,11 +31,12 @@ func GetCarList(c *gin.Context) {
 		fmt.Println(e.Err)
 		return
 	}
+	fmt.Println(query)
 
 	wrapper := obj.PageableWrapper{}
 	wrapper.OffMigrate(&query)
 
-	carPage := repository.GetCarPage(&query, uint(query.Context))
+	carPage := repository.GetCarPage(&wrapper, &query, uint(query.Context))
 	parkingDtoPage := mapper.MapToCarDtoList(carPage)
 
 	var interfaceSlice []interface{}
