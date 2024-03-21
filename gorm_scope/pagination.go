@@ -26,7 +26,7 @@ func Paginate(countFunction func(*gorm.DB) *gorm.DB, pagination obj.Pagination, 
 
 func FlexWhere(value interface{}, search obj.Search) func(db *gorm.DB) *gorm.DB {
 	if search.GetSearchBy() == "" || search.GetSearchText() == "" {
-		return func(db *gorm.DB) *gorm.DB { return db }
+		return func(db *gorm.DB) *gorm.DB { return db.Model(value) }
 	}
 	sql := fmt.Sprintf(getSqlByType(search.GetType()), search.GetSearchBy())
 	st := prepare(search.GetType(), search.GetSearchText())
@@ -63,10 +63,4 @@ func prepare(t string, value string) string {
 		return parsedTime.String()
 	}
 	return value
-}
-
-func DefaultCFunction(value interface{}) func(*gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		return db.Model(value)
-	}
 }

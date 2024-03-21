@@ -10,10 +10,11 @@ import (
 
 func GetParkingPage(pagination obj.Pagination, search obj.Search) []models.Parking {
 	var parkingList []models.Parking
+	whereFunc := gorm_scope.FlexWhere(parkingList, search)
 	initializers.DB.
 		Preload("CreatedBy").
-		Scopes(gorm_scope.Paginate(gorm_scope.DefaultCFunction(parkingList), pagination, initializers.DB)).
-		Scopes(gorm_scope.FlexWhere(parkingList, search)).
+		Scopes(gorm_scope.Paginate(whereFunc, pagination, initializers.DB)).
+		Scopes(whereFunc).
 		Find(&parkingList)
 	return parkingList
 }

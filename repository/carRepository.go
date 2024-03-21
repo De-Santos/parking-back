@@ -16,9 +16,10 @@ func SaveCar(car models.Car) {
 
 func GetCarPage(pagination obj.Pagination, query obj.Search, parkingId uint) []models.Car {
 	var carList []models.Car
+	whereFunc := gorm_scope.FlexWhere(carList, query)
 	initializers.DB.
-		Scopes(gorm_scope.Paginate(countFunction(parkingId), pagination, initializers.DB)).
-		Scopes(gorm_scope.FlexWhere(carList, query)).
+		Scopes(gorm_scope.Paginate(countFunction(parkingId, whereFunc), pagination, initializers.DB)).
+		Scopes(whereFunc).
 		Where(&models.Car{ParkingId: parkingId}).
 		Find(&carList)
 	return carList
@@ -51,8 +52,11 @@ func DeleteCarById(id int) bool {
 	return true
 }
 
-func countFunction(parkingId uint) func(db *gorm.DB) *gorm.DB {
+func countFunction(parkingId uint, where func(db *gorm.DB) *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Model(models.Car{}).Where(&models.Car{ParkingId: parkingId})
+		return db.
+			Model(models.Car{}).
+			Where(&models.Car{ParkingId: parkingId}).
+			Scopes(where)
 	}
 }

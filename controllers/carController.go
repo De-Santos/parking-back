@@ -28,10 +28,8 @@ func GetCarList(c *gin.Context) {
 	var query obj.SearchQuery
 	if e := request.BindValidQuery(c, &query); e != nil {
 		utils.ProcessBadResponse(c, e.Message)
-		fmt.Println(e.Err)
 		return
 	}
-	fmt.Println(query)
 
 	wrapper := obj.PageableWrapper{}
 	wrapper.OffMigrate(&query)
